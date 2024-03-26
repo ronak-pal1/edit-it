@@ -23,8 +23,8 @@ const ImageContain = ({ element }) => {
   // for changing the drag controls
   const controls = useDragControls();
 
-  // state for showing the close button on hover only
-  const [showCloseButton, setShowCloseButton] = useState(false);
+  // state for showing the options button on hover only
+  const [showOptions, setShowOptions] = useState(false);
 
   // getting setElements from recoil for changing the state i.e. deleting an element while clicking on close button
   const setElements = useSetRecoilState(elementAtom);
@@ -80,14 +80,15 @@ const ImageContain = ({ element }) => {
     >
       <div
         className="flex items-center"
-        onMouseOver={() => setShowCloseButton(true)}
-        onMouseOut={() => setShowCloseButton(false)}
+        onClick={() => setShowOptions(true)}
+        onMouseLeave={() => setShowOptions(false)}
       >
         {/* drag button */}
         <div>
           <HolderOutlined
             className="mr-4 cursor-pointer text-black"
             onPointerDown={(e) => controls.start(e)}
+            style={{ touchAction: "none" }}
           />
         </div>
 
@@ -98,7 +99,7 @@ const ImageContain = ({ element }) => {
               <img
                 src={imageURL}
                 alt="sample"
-                className="h-72 w-full object-contain"
+                className="h-32 md:h-72 w-full object-contain"
               />
             </div>
           ) : (
@@ -115,7 +116,7 @@ const ImageContain = ({ element }) => {
                   ref={fileInputRef}
                   onChange={(e) => setImageFile(e.target.files[0])}
                 />
-                <UploadOutlined className="text-lg" />
+                <UploadOutlined className="text-sm md:text-lg" />
                 <p className="text-xs">Upload an image</p>
               </div>
             </div>
@@ -123,7 +124,7 @@ const ImageContain = ({ element }) => {
         </div>
 
         {/* close button */}
-        {showCloseButton && (
+        {showOptions && (
           <div>
             <CloseCircleOutlined
               className="ml-4 cursor-pointer text-black"
@@ -132,7 +133,7 @@ const ImageContain = ({ element }) => {
           </div>
         )}
       </div>
-      <AddBox id={element.id} />
+      {showOptions && <AddBox id={element.id} stylingOptions={false} />}
     </Reorder.Item>
   );
 };

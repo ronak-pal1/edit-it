@@ -11,20 +11,27 @@ const TextContain = ({ element }) => {
   const controls = useDragControls();
 
   // Reference to the text input area
-  const contentEditRef = useRef();
+  const contentEditRef = useRef(null);
 
-  // state for showing the close button on hover only
-  const [showCloseButton, setShowCloseButton] = useState(false);
+  // state for showing the options on hover only
+  const [showOptions, setShowOptions] = useState(false);
+
   const setElements = useSetRecoilState(elementAtom);
 
-  const test = () => {
-    console.log(window.getSelection());
-    // console.log(contentEditRef.current.getSelection());
-  };
+  const [canInput, setCanInput] = useState(true);
 
   // close button function
   const closeContentEditArea = () => {
     setElements((prev) => prev.filter((p) => p.id != element.id));
+  };
+
+  const wordLimit = (limit) => {
+    const wordCount = contentEditRef.current.innerText.split(" ").length;
+    if (wordCount >= limit) {
+      setCanInput(false);
+    } else {
+      if (!canInput) setCanInput(true);
+    }
   };
 
   return (
@@ -35,8 +42,8 @@ const TextContain = ({ element }) => {
       dragControls={controls}
     >
       <div
-        onMouseOver={() => setShowCloseButton(true)}
-        onMouseOut={() => setShowCloseButton(false)}
+        onClick={() => setShowOptions(true)}
+        onMouseLeave={() => setShowOptions(false)}
       >
         <div className="flex items-center my-4">
           {/* drag button */}
@@ -44,6 +51,7 @@ const TextContain = ({ element }) => {
             <HolderOutlined
               className="mr-4 cursor-pointer text-black"
               onPointerDown={(e) => controls.start(e)}
+              style={{ touchAction: "none" }}
             />
           </div>
 
@@ -51,12 +59,16 @@ const TextContain = ({ element }) => {
           <div
             contentEditable
             ref={contentEditRef}
-            // onMouseUp={test}
+            onKeyDown={(e) => {
+              if (!canInput) e.preventDefault();
+
+              wordLimit(250);
+            }}
             className="w-full h-fit px-4 py-2  rounded-xl "
           ></div>
 
           {/* close button */}
-          {showCloseButton && (
+          {showOptions && (
             <div>
               <CloseCircleOutlined
                 className="ml-4 cursor-pointer text-black"
@@ -65,7 +77,7 @@ const TextContain = ({ element }) => {
             </div>
           )}
         </div>
-        <AddBox id={element.id} />
+        {showOptions && <AddBox id={element.id} />}
       </div>
     </Reorder.Item>
   );
