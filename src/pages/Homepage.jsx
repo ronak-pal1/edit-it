@@ -16,7 +16,7 @@ const Homepage = () => {
       if (user == null) navigate("/login");
       else navigate("/");
 
-      setUser(user.displayName);
+      setUser(user ? user.displayName : null);
     });
   }, []);
 
